@@ -1,16 +1,28 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
+const posts = await getCollection('blog');
+posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="arhms blog thing">
+	<h1>/index</h1>
+	<p>Welcome to shit</p>
+
+	<ul>
+		{posts.map((post) => (
+			<li>
+                <span>{post.data.date}</span>
+                &mdash;
+				<a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+			</li>
+		))}
+	</ul>
+</Layout>
+
+<style>
+    ul { list-style: none; padding: 0; }
+    li { margin-bottom: 0.5rem; }
+    span { color: #666; font-size: 0.9em; }
+</style>
