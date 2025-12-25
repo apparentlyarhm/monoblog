@@ -8,13 +8,32 @@ const { title } = Astro.props;
         <meta charset="UTF-8" />
         <title>{title}</title>
         <meta name="viewport" content="width=device-width" />
+
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/apple-touch-icon.png"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="/favicon-32x32.png"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
     </head>
     <body>
         <main>
             <header>
-                <a href="/">[home]</a>
-                <a href="https://github.com/apparentlyarhm">[github]</a>
-                <a href="https://nsfw.arhm.dev">[space]</a>
+                <a href="/">.home</a>
+                <a href="https://github.com/apparentlyarhm">.github</a>
+                <a href="https://nsfw.arhm.dev">.space</a>
             </header>
             <hr />
 
@@ -88,12 +107,15 @@ const { title } = Astro.props;
         overflow-x: auto;
         border: 1px solid #6b6b6b;
         border-radius: 12px;
-        font-size: 1.05rem;
+        font-size: 0.9rem;
         line-height: 1.5;
     }
     footer {
         text-align: left;
         font-size: 0.8em;
         color: #333333;
+    }
+    header {
+        font-style: italic;
     }
 </style>
