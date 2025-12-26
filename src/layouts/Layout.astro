@@ -90,17 +90,22 @@ const { title } = Astro.props;
         border: 1px dashed #202020;
         margin: 2rem 0;
     }
-    h1,
+    h1 {
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
     h2,
     h3,
     strong {
-        font-weight: normal;
-        text-transform: uppercase;
         letter-spacing: 1px;
         font-weight: 700;
     }
     code {
         padding: 2px 5px;
+        background: #c0c0c0;
+        color: #161616;
+        border-radius: 6px;
     }
     pre {
         background: #141414;
