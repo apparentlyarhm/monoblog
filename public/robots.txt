@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /.env
+Disallow: /wp-admin
+Disallow: /config.php
+
+Sitemap: https://blog.arhm.dev/sitemap-index.xml
