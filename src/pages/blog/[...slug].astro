@@ -16,7 +16,7 @@ const { Content } = await entry.render();
 const tags: string[] = entry.data.tags?.split(",") ?? [];
 ---
 
-<Layout title={entry.data.title}>
+<Layout title={entry.data.title} description={entry.data.description} image={entry.data.image}>
   <h1>{entry.data.title}</h1>
   <small>Posted on: {entry.data.date}</small>
 

@@ -1,13 +1,33 @@
 ---
-const { title } = Astro.props;
+const { title, description, image } = Astro.props;
+
+// Setup default values (if a page doesn't have a description)
+const siteTitle = "My MonoBlog";
+const finalTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+const finalDesc =
+    description || "Arhm's blog";
+
+const imagePath = image || "/bg.png";
+const finalImage = new URL(imagePath, Astro.site);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>{title}</title>
         <meta name="viewport" content="width=device-width" />
+        <link rel="icon" href="/favicon.ico" />
+
+        <!-- SEO and Open Graph -->
+        <title>{finalTitle}</title>
+        <meta name="description" content={finalDesc} />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:title" content={finalTitle} />
+        <meta property="og:description" content={finalDesc} />
+        <meta property="og:image" content={finalImage} />
 
         <link
             rel="apple-touch-icon"
@@ -58,6 +78,13 @@ const { title } = Astro.props;
         font-style: normal;
         font-display: swap;
     }
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        display: block;
+        margin: 2rem auto;
+    }
 
     :root {
         --bg: #111111;
@@ -92,6 +119,7 @@ const { title } = Astro.props;
         margin-left: auto;
         margin-right: auto;
         line-height: 1.7;
+        text-align: justify;
     }
 
     h1,
@@ -102,6 +130,7 @@ const { title } = Astro.props;
         font-weight: 600;
         line-height: 1.2;
         letter-spacing: -0.02em;
+        text-align: left;
     }
 
     h1 {
@@ -212,6 +241,11 @@ const { title } = Astro.props;
             --text-lg: 1.25rem; /* ~20px */
             --text-xl: 1.5rem; /* ~24px */
             --text-2xl: 1.85rem; /* ~30px (Much smaller than desktop 45px) */
+        }
+
+        img {
+            border-radius: 4px; /* Smaller radius for small screens */
+            margin: 1.5rem auto;
         }
 
         html {

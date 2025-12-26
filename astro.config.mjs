@@ -8,5 +8,6 @@ export default defineConfig({
             theme: 'github-dark', // we will what all we can add later
             wrap: true,
         },
-    }
+    },
+    site: 'https://blog.arhm.dev', 
 });
