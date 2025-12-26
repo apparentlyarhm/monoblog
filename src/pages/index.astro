@@ -6,9 +6,9 @@ const posts = await getCollection('blog');
 posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 ---
 
-<Layout title="arhms blog thing">
+<Layout title="who reads blogs anyway">
 	<h1>who reads blogs anyway</h1>
-	<p>I really want to write about anything i want, not just tech</p>
+	<p>I really want to write about anything i want, not just tech but keep in mind i built this only for the sake of building it, i have never wrote blogs or anything out of academics at least regularly before.</p>
 
 	<ul>
 		{posts.map((post) => (
