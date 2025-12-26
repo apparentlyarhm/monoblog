@@ -2,6 +2,7 @@
 title: "Hello World"
 date: "2025-12-25"
 slug: "hello-world"
+description: "Serves as a test"
 ---
 
 # What's this?
@@ -10,7 +11,7 @@ This is a test of the **monoblog** system, where we build mds by building the as
 <br></br>
 I was just fucking around with gemini to brainstorm to somehow use my spare laptop as a blog reserve, and it suggested this approach, which is not too shabby and honestly unlike anything ive worked with. interesting. Ive never worked with a system like this by the way.
 # Why Go + Astro?
-Because why not?
+why not?
 
 **NOTE:** this is my first look at astro, like ever.
 
