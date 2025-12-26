@@ -49,6 +49,8 @@ const { title } = Astro.props;
 </html>
 
 <style is:global>
+    /* inspired by https://fonts.google.com/knowledge/using_type/the_foundations_of_web_typography */
+
     @font-face {
         font-family: "JetBrains Mono";
         src: url("/fonts/JetBrainsMono[wght].ttf") format("truetype");
@@ -58,67 +60,192 @@ const { title } = Astro.props;
     }
 
     :root {
-        --bg: #0c0c0c;
-        --fg: #c0c0c0;
-        --accent: #00a2ff;
-        --font-main: "JetBrains Mono", monospace;
-    }
-    html {
-        font-family: var(--font-main);
-        font-weight: 400;
-        background: var(--bg);
-        color: var(--fg);
-        line-height: 1.6;
-    }
-    body {
-        margin: 0;
-        font-size: 0.9em;
-        padding: 2rem;
-        max-width: 85ch;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    a {
-        color: var(--fg);
-        text-decoration: underline;
-    }
-    a:hover {
-        color: var(--accent);
-        background: #222;
-    }
-    hr {
-        border: 1px dashed #202020;
-        margin: 2rem 0;
-    }
-    h1 {
-        font-weight: 800;
-        text-transform: uppercase;
+        --bg: #111111;
+        --fg: #eeeeee;
+        --accent: #00ff00;
+
+        --text-base: 1.125rem;
+        --text-lg: 1.414rem;
+        --text-xl: 1.999rem;
+        --text-2xl: 2.827rem;
     }
 
+    html {
+        font-family: "JetBrains Mono", monospace; /* Fallback */
+        background: var(--bg);
+        color: var(--fg);
+
+        font-size: clamp(100%, 1vw + 1rem, 1.2rem);
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #333;
+        margin: 2rem 0;
+        padding: 2px;
+    }
+
+    body {
+        margin: 0;
+        padding: 2rem 1.5rem; /* More padding on mobile */
+        max-width: 90ch;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.7;
+    }
+
+    h1,
     h2,
-    h3,
-    strong {
-        letter-spacing: 1px;
-        font-weight: 700;
+    h3 {
+        /* font-family: 'Space Grotesk', sans-serif; */
+        color: #fff;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
     }
-    code {
-        padding: 2px 5px;
-        background: #c0c0c0;
-        color: #161616;
-        border-radius: 6px;
+
+    h1 {
+        font-size: var(--text-2xl);
+        margin-top: 0;
+        margin-bottom: 1.5rem;
     }
+
+    h2 {
+        font-size: var(--text-xl);
+        /* PROXIMITY RULE: More space above, less below */
+        margin-top: 3.5rem;
+        margin-bottom: 0.75rem;
+
+        border-bottom: 1px dashed #333;
+        display: inline-block;
+        padding-bottom: 0.2rem;
+    }
+
+    h3 {
+        font-size: var(--text-lg);
+        margin-top: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        margin-bottom: 1.5rem;
+        color: #8b8b8b;
+    }
+
+    a {
+        color: var(--fg);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px; /* Pushes underline down for legibility */
+        transition: all 0.2s ease;
+    }
+
+    a:hover {
+        color: var(--accent);
+        background: #1a1a1a;
+        text-decoration: none;
+    }
+
+    ul,
+    ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    li {
+        margin-bottom: 0.5rem;
+        padding-left: 0.5rem;
+        color: #8b8b8b;
+    }
+
+    li::marker {
+        color: #666;
+    }
+
+    :not(pre) > code {
+        font-family: "JetBrains Mono", monospace;
+        padding: 0.2em 0.4em;
+        background: #2a2a2a;
+        color: #ff79c6;
+        border-radius: 4px;
+        font-size: 0.85em;
+        border: 1px solid #333;
+    }
+
     pre {
-        background: #141414;
-        padding: 1rem;
+        background-color: #0d1117 !important; /* override shiki */
+        padding: 1.5rem;
         overflow-x: auto;
-        border: 1px solid #6b6b6b;
+        border: 1px solid #30363d; /* Subtle border matching the theme */
         border-radius: 12px;
         font-size: 0.9rem;
-        line-height: 1.5;
+        line-height: 1.6;
+        margin: 2rem 0;
     }
+
+    /* This forces the code INSIDE the block to be transparent and unstyled 
+       so the syntax highlighting shines through */
+    pre code {
+        background: transparent !important;
+        color: inherit !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        font-size: inherit !important;
+    }
+
     footer {
         text-align: left;
         font-size: 0.8em;
         color: #333333;
+    }
+
+    /* used gemini to give me a good mobile adaptation */
+
+    /* ========================================= */
+    /*  MOBILE OPTIMIZATIONS (Max Width 768px) */
+    /* ========================================= */
+    @media (max-width: 768px) {
+        :root {
+            /* 1. Downscale the Typography Hierarchy */
+            /* We drop the ratio to be tighter on mobile */
+            --text-base: 1rem; /* 16px (Standard readability) */
+            --text-lg: 1.25rem; /* ~20px */
+            --text-xl: 1.5rem; /* ~24px */
+            --text-2xl: 1.85rem; /* ~30px (Much smaller than desktop 45px) */
+        }
+
+        html {
+            /* Reset fluid type - stick to base size on mobile to prevent "Huge Text" syndrome */
+            font-size: 16px;
+        }
+
+        body {
+            /* 2. Reclaim Screen Real Estate */
+            padding: 1.5rem 1rem; /* Less padding on sides */
+            max-width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            /* Tighten vertical rhythm (scrolling is expensive on mobile) */
+            margin-top: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            padding: 1rem;
+            margin: 1.5rem -1rem; /* Pull to edges */
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+        }
+
+        /* Ensure inline code doesn't break layout */
+        code {
+            word-break: break-word;
+        }
     }
 </style>
