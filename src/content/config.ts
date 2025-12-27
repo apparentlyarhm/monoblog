@@ -10,4 +10,10 @@ const blog = defineCollection({
 	}),
 });
 
+export const SITE = {
+    title: "arhm's blog",
+    description: "a site where arhm writes BS",
+    defaultImage: "/bg.png", 
+};
+
 export const collections = { blog };
