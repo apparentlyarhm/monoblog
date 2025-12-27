@@ -4,8 +4,7 @@ const { title, description, image } = Astro.props;
 // Setup default values (if a page doesn't have a description)
 const siteTitle = "My MonoBlog";
 const finalTitle = title ? `${title} | ${siteTitle}` : siteTitle;
-const finalDesc =
-    description || "Arhm's blog";
+const finalDesc = description || "Arhm's blog";
 
 const imagePath = image || "/bg.png";
 const finalImage = new URL(imagePath, Astro.site);
@@ -119,7 +118,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         margin-left: auto;
         margin-right: auto;
         line-height: 1.7;
-        text-align: justify;
     }
 
     h1,
@@ -203,7 +201,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     pre {
         background-color: #0d1117 !important; /* override shiki */
         padding: 1.5rem;
-        overflow-x: auto;
         border: 1px solid #30363d; /* Subtle border matching the theme */
         border-radius: 12px;
         font-size: 0.9rem;
@@ -220,6 +217,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         border: none !important;
         border-radius: 0 !important;
         font-size: inherit !important;
+        overflow-x: auto !important;
     }
 
     footer {
@@ -275,11 +273,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
             border-radius: 0;
             border-left: none;
             border-right: none;
+            overflow-x: auto !important;
+        }
+        
+        pre code {
+            white-space: pre; /* or pre-nowrap */
+            word-break: normal;
         }
 
         /* Ensure inline code doesn't break layout */
         code {
-            word-break: break-word;
+            font-size: 0.9rem;
         }
     }
 </style>

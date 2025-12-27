@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   markdown: {
       shikiConfig: {
-          theme: 'github-dark', // we will what all we can add later
+          theme: 'houston', // we will what all we can add later
           wrap: true,
       },
   },
