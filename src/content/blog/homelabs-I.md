@@ -3,7 +3,7 @@ title: "Homelabs I: tsnet feels like cheating"
 date: "2025-12-26"
 slug: "homelabs-I"
 tags: "tailscale,golang,self-hosting,postgres,cloud-run"
-description: "One of many ways to self host a database, and my experience around it"
+description: "One of many ways to self host a database, and how I did it"
 ---
 
 # I: Context
@@ -35,14 +35,14 @@ I'm not really sure **exactly** why they use CGNAT but surely it couldnt be *jus
 Well I do have a *golang* backend running on GCP serving my [other site](https://nsfw.arhm.dev/). it runs fine, and by design, it talks to 3-4 external APIs to help populate my site. 
 Wouldn't it be nice if I could track latencies? but surely, a database isnt needed for this, heck I could just `fmt.Logf("")`, read the logs on Cloud Run console and call it day. But no, I really wanted to get my hands on PostgreSQL and **NOT** use any managed services for the same. 
 
-Well I just found my use case: **a database server** (sigh), and so began my research. I'm in no way stranger to databases, linux or even networking in general, but I really wanted a way for GCP to talk to my machine without too much effort.
+Well I just found my use case: **a database server** (sigh), and so began my research. I'm in no way stranger to databases, linux or even networking in general, but I really wanted a way for GCP to talk to my machine without too much effort. (Although it would have been a very nice learning experience)
 
 # II: VPNs and Tailscale
 
 ### How VPNs might help here
 Well thoughts can start from:
 
-*"VPNs could help"*
+*"maybe VPNs could help"*
 
 to:
 
@@ -73,13 +73,13 @@ Turns out it actually does.
 
 ### userspace networking
 
-I for some reason subconsciously assumed that networking is an OS thing - never gave it second thought: Packets come in through a NIC, the kernel handles TCP/IP, sockets get exposed to applications, and that’s that. If you want to do “real” networking, you need access to the machine, the interfaces, and usually some level of privilege.
+I for some reason subconsciously assumed that networking is an OS thing - never gave it a second thought: Packets come in through a NIC, the kernel handles TCP/IP, sockets get exposed to applications, and that’s that. If you want to do “real” networking, you need access to the machine, the interfaces, and usually some level of privilege.
 
-But thing is, TCP/IP doesn’t actually have to live in the kernel. Thats the idea of **userspace networking**. This works because, think about it, TCP/IP is just logic. It’s traditionally implemented in the kernel for performance and shared access. That means if you’re willing to pay a small overhead, you can implement the entire networking stack in userspace, inside your application process.
+But thing is, TCP/IP doesn’t actually have to live in the kernel. Thats the idea of **userspace networking**. This works because, think about it, TCP/IP is just logic. It’s traditionally implemented in the kernel for performance and shared access. That means if you’re willing to pay a small overhead, you can implement the entire networking stack in userspace, inside your application process, decoupling you from the OS when it comes to networks.
 
 ### tsnet
 
-[`tsnet`](https://tailscale.com/kb/1244/tsnet) is a **goated** go library maintained by Tailscale that uses this idea and hence lets you embed an entire Tailscale node inside your Go binary.
+[`tsnet`](https://tailscale.com/kb/1244/tsnet) is a **goated** go library maintained by Tailscale that uses the idea above and hence lets you embed an entire Tailscale node inside your Go binary.
 
 Once the binary starts, it authenticates with Tailscale, joins the tailnet, gets its own identity, and suddenly shows up in the admin console like any other device. Except this *“device”* happens to be a Cloud Run instance that didn’t exist a few seconds ago. It's very neat.
 
@@ -162,7 +162,7 @@ func InitDb(cfg *Config) *DBConnection {
 From Cloud Run’s perspective, the service starts instantly.
 Whether the database connects in 2 seconds, 20 seconds, or never at all is irrelevant to request handling.
 
-### c. Opting Into Tailscale Only When Needed
+### c. Calling Tailscale Only When Needed
 Instead of hard-coding tsnet, the decision to use it is driven entirely by configuration:
 ```go
 if cfg.TailscaleAuthKey != "" {
@@ -171,7 +171,7 @@ if cfg.TailscaleAuthKey != "" {
 }
 ```
 
-### d. Hijacking the Database Dialer (The Fun Part)
+### d. Custom Dialer
 
 Instead of asking Postgres to connect using the OS network stack, I override the dialer and route connections through the embedded Tailscale node:
 ```go
@@ -180,13 +180,9 @@ pgxConfig.DialFunc = func(ctx context.Context, network, addr string) (net.Conn, 
 }
 ```
 
-At this point:
+At this point its a normal outbound connection from the service, which is essentially modified by tsnet to look like one. in reality, **we are connected to the tail-net,** which means we can reach our database.
 
-- Postgres thinks it’s opening a normal TCP connection
-- Cloud Run thinks it’s making a regular outbound connection
-- Tailscale quietly handles identity, encryption, and routing
-
-### e. Backing Off Politely in case of failure
+### e. Back-off strategy
 Instead of crashing or blocking forever, I use a simple backoff loop:
 ```go
 for {
@@ -199,7 +195,7 @@ for {
 	time.Sleep(backoff)
 }
 ```
-This is not robust. It’s not elegant. It’s just enough. I will be honest, the backoff logic can be improved a lot here. But for now, we move on.
+This is not robust though, just enough. I will be honest, we can engineer it better, but for now, we move on.
 
 ## seeing it in action
 
@@ -211,27 +207,27 @@ As you can see it *finally* connected after a bit of work (**ALL** outbound are 
 <img src="/assets/homelabs-I/four.png">
 
 
-moreoverm, while it set itself up in the tailnet, it also showed up in the console:
+moreover, while it set itself up in the tailnet, the app also showed up in the console as a device:
 
 <img src="/assets/homelabs-I/three.png">
 
 
-## enabling the spying
+## refactoring the code to support logging
 
-All services in my app are a service, with a `client` struct associated with it. for example we can write something like this for github:
+Originally, I wrote all external APIs in the form of a `Service`, with a `client` struct associated with it. Consider this for an example:
 ```go
 type Client struct {
 	config config.GitHubConfig <- has secrets/vars/tokens
 	http   *http.Client 
 }
 ```
-since we inject a http client to every service, we can create a custom http.Client that has metrics enabled (or disabled, if the db is down)
+this struct can have methods attached to it that contains the business logic of fetching, transforming, if necessary. 
 
-I could intercept outgoing HTTP requests once, I could measure everything without touching individual call sites.
+since we inject a http client to every service, we can create a custom http.Client with custom logic on top of making the requests, that means, I can write a logging logic there, which uses the database, without touching individual call sites.
 
-Go already gives you the perfect hook for this: `http.RoundTripper`.
+Go already gives you the perfect hook for this -> `http.RoundTripper`.
 
-we define
+we can define:
 
 ```go
 type MetricTransport struct {
@@ -268,7 +264,7 @@ func (t *MetricTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 ```
 
-then, Database writes happen in a goroutine. A few important things to note here:
+the actual DB write can occur in a goroutine. A few important things to note here:
 
 - If this goroutine never runs, nothing breaks
 - If the database disappears mid-request, nothing breaks
@@ -281,7 +277,7 @@ go func() {
 			statusCode = resp.StatusCode
 		}
 
-		db.Exec()
+		db.Exec() // your insert code here, standard.
 
 		if dbErr != nil {
 			log.Printf("[METRICS] DB Log Error: %v\n", dbErr)
@@ -289,7 +285,7 @@ go func() {
 	}()
 ```
 
-Now since the client is ready, we can just inject. Based on the github client above, we can have something like:
+Now that we have a setup, we can have something like:
 
 ```go
 githubHttp := &http.Client{
@@ -313,7 +309,9 @@ notice that it didn’t require:
 - passing context objects through half the codebase
 - Metrics became an infrastructure concern, not a business-logic concern.
 
-And with that, we have successfully self hosted a database, along with good programming patterns throughout a golang application. 
+Which is exactly what I wanted.
 
-# IV: Closing thoughts
-nothing, self hosting is fun, even if there is no real use case or you break best practices sometimes here and there. Hopefully it was an insightful read for you!
+# IV: Closing thoughts 
+With that, we have successfully self hosted a database, along with good programming patterns throughout a golang application. Thoughts-wise I have nothing to say except that self hosting is fun, even if there is no real use case or you break best practices sometimes here and there. 
+
+Hopefully it was an insightful read for you!
