@@ -96,7 +96,7 @@ This blog is **NOT** a full follow-along tutorial, and configuring postgres is a
 
 After installing it **can, not should** look like:
 
-<img src="/assets/homelabs-I/one.png"></img>
+![Database strcuture - this is just for show](../../assets/homelabs-I/one.png)
 
 
 ## A possible approach to utilise tsnet
@@ -199,17 +199,16 @@ This is not robust though, just enough. I will be honest, we can engineer it bet
 
 ## seeing it in action
 
-<img src="/assets/homelabs-I/two.png">
-
+![Cloud run logs](../../assets/homelabs-I/two.png)
 
 As you can see it *finally* connected after a bit of work (**ALL** outbound are billed, so this isnt ideal actually), the reason you see 3x the logs is because Cloud Run spun up 3 instances probably because i reloaded very fast:
 
-<img src="/assets/homelabs-I/four.png">
+![3 instances of the container](../../assets/homelabs-I/four.png)
 
 
 moreover, while it set itself up in the tailnet, the app also showed up in the console as a device:
 
-<img src="/assets/homelabs-I/three.png">
+![Our docker app shows up as an actual device on the vpn](../../assets/homelabs-I/three.png)
 
 
 ## refactoring the code to support logging
