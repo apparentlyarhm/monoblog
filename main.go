@@ -4,13 +4,14 @@ import (
 	"embed"
 	"io/fs"
 	"log"
+	"mime"
 	"net/http"
 	"slices"
 )
 
 // This tells Go: "Take the 'dist' folder and bake it into this binary"
 //
-//go:embed dist/*
+//go:embed all:dist
 var content embed.FS
 
 var BM = []string{
@@ -24,6 +25,9 @@ var BM = []string{
 }
 
 func main() {
+	mime.AddExtensionType(".js", "application/javascript")
+	mime.AddExtensionType(".css", "text/css")
+
 	distDir, err := fs.Sub(content, "dist")
 	if err != nil {
 		log.Fatal(err)
