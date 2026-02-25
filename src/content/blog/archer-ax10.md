@@ -2,7 +2,7 @@
 title: "The TP-Link Archer AX10 - an engineer's diary"
 date: "2026-02-24"
 slug: "archer-ax10"
-tags: "tp-link,router,networking,gigabit"
+tags: "tp-link,router,networking,gigabit,pppoe"
 description: "understanding standard FTTH practices and gaining control over the hardware I own"
 image: "/cover-ax10.png"
 ---
