@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>404 - Not Found!!1!</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Space+Grotesk:wght@300..700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* We will copy a lot of stuff from my main app's css */
+
+        :root {
+            --bg: #111111;
+            --fg: #eeeeee;
+            --accent: #00ff00;
+
+            --text-base: 1.125rem;
+            --text-lg: 1.414rem;
+            --text-xl: 1.999rem;
+            --text-2xl: 2.827rem;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', sans-serif;
+            text-align: center;
+            padding: 50px;
+
+            background: var(--bg);
+            color: var(--fg);
+        }
+
+        h1 {
+            font-size: var(--text-2xl);
+            color: var(--fg);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: #8b8b8b;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff4757;
+            text-decoration: none;
+            border-radius: 12px;
+
+            color: var(--fg);
+            text-decoration-thickness: 1px;
+            text-underline-offset: 4px;
+            transition: all 0.2s ease;
+        }
+
+        a:hover {
+            background-color: #ff6b81;
+            transform: translateY(-2px);
+        }
+
+        svg {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                /* 1. Downscale the Typography Hierarchy */
+                /* We drop the ratio to be tighter on mobile */
+                --text-base: 1rem;
+                /* 16px (Standard readability) */
+                --text-lg: 1.25rem;
+                /* ~20px */
+                --text-xl: 1.5rem;
+                /* ~24px */
+                --text-2xl: 1.85rem;
+                /* ~30px (Much smaller than desktop 45px) */
+            }
+
+            h1 {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>404 - Page Not Found</h1>
+
+    <!-- Its just one svg, fine to embed -->
+    <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"/><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/><g id="SVGRepo_iconCarrier"> <path d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" stroke="#9a9996" stroke-width="1.5"/> <path opacity="0.5" d="M10.5 15L13.5 12M13.5 15L10.5 12" stroke="#9a9996" stroke-width="1.5" stroke-linecap="round"/> </g></svg>
+    <p>"Getting lost along your path is a part of finding the path you are meant to be on."</p>
+    <a href="/">Go back home</a>
+</body>
+
+</html>
