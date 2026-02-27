@@ -20,8 +20,9 @@ FROM golang:1.25.5-alpine as be
 WORKDIR /app
 
 COPY --from=fe /app/dist ./dist
-COPY go.mod ./
-COPY main.go ./
+COPY go.mod go.sum main.go ./
+
+RUN go mod download
 
 RUN go build -o server main.go
 
