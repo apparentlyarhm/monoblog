@@ -31,6 +31,7 @@ var BM = []string{
 	"/login",
 	"/phpmyadmin",
 	"/id_rsa",
+	"/.git",
 }
 
 // ========== MIDDLEWARES ==========
@@ -40,7 +41,16 @@ var BM = []string{
 
 func loggerMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s %s\n", r.Method, r.URL.Path)
+		// we will deliberatly see RemoteAddr value to see what cloudflare is sending
+
+		cf := true
+		a := r.Header.Get("CF-Connecting-IP")
+		if a == "" {
+			cf = false
+		}
+
+		// TODO: revert back to original after testing
+		log.Printf("%s %s rm: %s cf: %t\n", r.Method, r.URL.Path, r.RemoteAddr, cf)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -71,12 +81,8 @@ func custom404MW(next http.Handler, notFoundHTML []byte) http.Handler {
 
 func rateLimitMW(next http.Handler, rateLimitHTML []byte) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip, _, err := net.SplitHostPort(r.RemoteAddr)
-		if err != nil {
-			ip = r.RemoteAddr
-		}
+		limiter := getVisitor(getIP(r))
 
-		limiter := getVisitor(ip)
 		if !limiter.Allow() {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.WriteHeader(http.StatusTooManyRequests)
@@ -122,6 +128,19 @@ func getVisitor(ip string) *rate.Limiter {
 	}
 
 	return limiter
+}
+
+func getIP(r *http.Request) string {
+	cfIP := r.Header.Get("CF-Connecting-IP")
+	if cfIP != "" {
+		return cfIP
+	}
+
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return ip
 }
 
 // ========== MAIN FUNCTION ==========
