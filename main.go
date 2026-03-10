@@ -2,11 +2,15 @@ package main
 
 import (
 	"embed"
+	"fmt"
+	"html/template"
 	"io/fs"
 	"log"
 	"mime"
 	"net"
 	"net/http"
+	"os"
+	"runtime"
 	"slices"
 	"sync"
 
@@ -167,7 +171,35 @@ func main() {
 	fileServer := http.FileServer(http.FS(distDir))
 	finalHandler := prankMW(loggerMW(rateLimitMW(custom404MW(fileServer, HTML404), HTML429)))
 
-	http.Handle("/", finalHandler)
+	tmpl := template.Must(template.ParseFS(distDir, "index.html"))
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		if r.URL.Path != "/" {
+			finalHandler.ServeHTTP(w, r)
+			return
+		}
+
+		diagnostics := fmt.Sprintf(
+			"go:%s // %s/%s // goroutines:%d // svc:%s // region:%s // inst:%s // commit:%s",
+			runtime.Version(),
+			runtime.GOOS,
+			runtime.GOARCH,
+			runtime.NumGoroutine(),
+			os.Getenv("RENDER_SERVICE_NAME"),
+			os.Getenv("RENDER_REGION"),
+			os.Getenv("RENDER_INSTANCE_ID"),
+			os.Getenv("RENDER_GIT_COMMIT"),
+		)
+
+		data := struct {
+			Diagnostics string
+		}{
+			Diagnostics: diagnostics,
+		}
+
+		tmpl.Execute(w, data)
+	})
 
 	log.Println(`
 ⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⢕⠕⠕⠕⠕⢕⢕
