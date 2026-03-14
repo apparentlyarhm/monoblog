@@ -46,18 +46,10 @@ const tags: string[] = entry.data.tags?.split(",") ?? [];
 
 <script>
   import mediumZoom from "medium-zoom";
-  const slug = window.location.pathname.replace(/\//g, '') || 'home';
+  const slug = window.location.pathname.replace(/\//g, "") || "home";
 
-  type Authdata = {
-    payload: string,
-    signature: string,
-  }
-
-  let tup = false;
-  let d: Authdata;
-  let s = false;
-  let r = false;
-
+  const COOLDOWN_KEY = `viewed_${slug}`;
+  const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
   const images = document.querySelectorAll(".blog-content img");
   if (images.length > 0) {
@@ -68,31 +60,78 @@ const tags: string[] = entry.data.tags?.split(",") ?? [];
     });
   }
 
-  // immediately get a valid payload
-  fetch(`/views/init?slug=${slug}`)
-    .then(res => res.json())
-    .then(data => { d = data; });
+  const cooldownAt = localStorage.getItem(COOLDOWN_KEY);
+  if (cooldownAt && Date.now() < parseInt(cooldownAt, 10)) {
+    console.log("View already recorded locally. Skipping analytics.");
+  } else {
+    initAnalytics();
+  }
 
-  setTimeout(() => {
-    tup = true;
-    checkAndRecord();
-  }, 4000);
+  function initAnalytics() {
+    type Authdata = {
+      payload: string;
+      signature: string;
+    };
 
-  window.addEventListener('scroll', () => {
-    s = true;
-    checkAndRecord();
-  }, { once: true });
+    let tup = false;
+    let d: Authdata;
+    let s = false;
+    let r = false;
 
+    fetch(`/views/init?slug=${slug}`)
+      .then((res) => {
+        if (res.status === 429) throw new Error("Rate limited on init");
+        return res.json();
+      })
+      .then((data) => {
+        d = data;
+      })
+      .catch((err) => console.warn("Analytics init failed:", err));
 
-  function checkAndRecord() {
-    if (tup && s && d && !r) {
-      r = true; 
-      
-      fetch('/views/record', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(d)
-      });
+    setTimeout(() => {
+      tup = true;
+      checkAndRecord();
+    }, 4000);
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        s = true;
+        checkAndRecord();
+      },
+      { once: true },
+    );
+
+    async function checkAndRecord(retryCount = 0) {
+      if (tup && s && d && !r) {
+        r = true;
+
+        try {
+          const res = await fetch("/views/record", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(d),
+          });
+
+          // SUCCESS or DUPLICATE -> Set the lock in the browser
+          if (res.ok || res.status === 409) {
+            localStorage.setItem(
+              COOLDOWN_KEY,
+              (Date.now() + COOLDOWN_MS).toString(),
+            );
+          }
+          // RATE LIMITED -> Retry once after 3 seconds
+          else if (res.status === 429 && retryCount < 1) {
+            console.warn("Rate limited recording view. Retrying...");
+            r = false;
+            setTimeout(() => checkAndRecord(1), 3000);
+          }
+        } catch (err) {
+          console.error("Failed to record view:", err);
+          // On network failure, we unlock so they can try again if they keep scrolling/staying
+          r = false;
+        }
+      }
     }
   }
 </script>
