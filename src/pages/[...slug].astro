@@ -46,6 +46,18 @@ const tags: string[] = entry.data.tags?.split(",") ?? [];
 
 <script>
   import mediumZoom from "medium-zoom";
+  const slug = window.location.pathname.replace(/\//g, '') || 'home';
+
+  type Authdata = {
+    payload: string,
+    signature: string,
+  }
+
+  let tup = false;
+  let d: Authdata;
+  let s = false;
+  let r = false;
+
 
   const images = document.querySelectorAll(".blog-content img");
   if (images.length > 0) {
@@ -54,6 +66,34 @@ const tags: string[] = entry.data.tags?.split(",") ?? [];
       scrollOffset: 0,
       background: "rgba(0, 0, 0, 0.78)",
     });
+  }
+
+  // immediately get a valid payload
+  fetch(`/views/init?slug=${slug}`)
+    .then(res => res.json())
+    .then(data => { d = data; });
+
+  setTimeout(() => {
+    tup = true;
+    checkAndRecord();
+  }, 4000);
+
+  window.addEventListener('scroll', () => {
+    s = true;
+    checkAndRecord();
+  }, { once: true });
+
+
+  function checkAndRecord() {
+    if (tup && s && d && !r) {
+      r = true; 
+      
+      fetch('/views/record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(d)
+      });
+    }
   }
 </script>
 
