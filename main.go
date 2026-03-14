@@ -135,6 +135,8 @@ func getVisitor(ip string) *rate.Limiter {
 }
 
 func getIP(r *http.Request) string {
+	log.Printf("CF-Connecting-IP: %s, X-Forwarded-For: %s", r.Header.Get("CF-Connecting-IP"), r.Header.Get("X-Forwarded-For"))
+
 	cfIP := r.Header.Get("CF-Connecting-IP")
 	if cfIP != "" {
 		return cfIP
