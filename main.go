@@ -20,7 +20,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
 
@@ -32,7 +31,7 @@ var content embed.FS
 type ViewPayload struct {
 	Slug     string `json:"slug"`
 	IssuedAt int64  `json:"iat"`
-	Nonce    string `json:"nonce"`
+	ViewerId string `json:"viewer_id"`
 }
 
 var httpClient = &http.Client{Timeout: 5 * time.Second}
@@ -79,10 +78,23 @@ func main() {
 				return
 			}
 
+			// in our case, the CF header is good enough based on simple logging i did earlier
+			// what if we find out a way to keep this logic hidden from the source code? perhaps
+			// an external, un version controlled script that only the server knows?
+			ip := r.Header.Get("CF-Connecting-IP")
+			if ip == "" {
+				ip = r.RemoteAddr
+			}
+
+			ua := r.Header.Get("User-Agent")
+			fingerprint := sha256.Sum256([]byte(ip + ua))
+
+			viewerID := hex.EncodeToString(fingerprint[:])
+
 			payload := ViewPayload{
 				Slug:     slug,
 				IssuedAt: time.Now().Unix(),
-				Nonce:    uuid.New().String(),
+				ViewerId: viewerID,
 			}
 
 			jsonBytes, _ := json.Marshal(payload)
@@ -167,7 +179,7 @@ func main() {
 Starting server
 	`)
 
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 }
