@@ -1,12 +1,11 @@
 ---
-import { getSEOMetadata } from '../utils/seo';
+import { getSEOMetadata } from "../utils/seo";
 
-const { 
-    finalTitle, 
-    finalDesc, 
-    finalImage, 
-    canonicalURL 
-} = getSEOMetadata(Astro.props, Astro.url, Astro.site);
+const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
+    Astro.props,
+    Astro.url,
+    Astro.site,
+);
 ---
 
 <!doctype html>
@@ -60,7 +59,7 @@ const {
             <hr />
             <footer>
                 <p>Diagnostics:</p>
-                <small>{'{{.Diagnostics}}'}</small>
+                <small>{"{{.Diagnostics}}"}</small>
             </footer>
         </main>
     </body>
@@ -118,6 +117,17 @@ const {
         margin-left: auto;
         margin-right: auto;
         line-height: 1.7;
+    }
+
+    blockquote {
+        border: 1px solid #0c4494;
+        border-left: 7px solid #0c71ff;
+        background: #151515;
+        padding: 2rem;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: #ff79c6 !important;
+        border-radius: 12px
     }
 
     h1,
