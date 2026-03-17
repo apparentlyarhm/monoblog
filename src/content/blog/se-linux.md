@@ -1,5 +1,6 @@
 ---
 title: "Writing startup Linux Services - A SELinux Investigation"
+category: "Tech"
 date: "2026-03-16"
 slug: "startup-services-with-selinux"
 tags: "linux, selinux, fedora, python, systemd, labels"

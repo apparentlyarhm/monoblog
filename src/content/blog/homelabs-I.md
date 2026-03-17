@@ -1,5 +1,6 @@
 ---
 title: "Homelabs I: tsnet feels like cheating"
+category: "Tech"
 date: "2025-12-26"
 slug: "homelabs-I"
 tags: "tailscale,golang,self-hosting,postgres,cloud-run"

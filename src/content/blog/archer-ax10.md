@@ -1,5 +1,6 @@
 ---
 title: "The TP-Link Archer AX10 - an engineer's diary"
+category: "Tech"
 date: "2026-02-24"
 slug: "archer-ax10"
 tags: "tp-link,router,networking,gigabit,pppoe"
