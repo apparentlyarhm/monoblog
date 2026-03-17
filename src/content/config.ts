@@ -16,12 +16,14 @@ const blog = defineCollection({
 
 		// Optional image for the blog post
 		image: z.string().optional(),
+
+		category: z.string().optional(),
 	}),
 });
 
 export const SITE = {
-    title: "arhm's blog",
-    description: "a site where arhm writes BS",
+    title: "Arhm's blog",
+    description: "I've now started writing about whatever I feel is interesting wiht no plans whatsoever",
     defaultImage: "/bg.png", 
 };
 

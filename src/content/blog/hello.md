@@ -1,4 +1,5 @@
 ---
+category: "Test"
 title: "Hello World"
 date: "2025-12-25"
 slug: "hello-world"
