@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import { SITE } from "../content/config";
 
 const posts = await getCollection("blog");
 posts.sort(
@@ -8,49 +9,69 @@ posts.sort(
 );
 ---
 
-<Layout title="good title">
-	<h1>Good Title</h1>
-	<p>Some description</p>
+<Layout title="insert title here">
+	<h1>{SITE.title}</h1>
+	<p>{SITE.description}</p>
 
 	<div class="grid">
 		{
-			posts.map((post) => (
-				<a class="card" href={`/${post.slug}/`}>
-					{post.data.image && (
-						<img src={post.data.image} alt={post.data.title} />
-					)}
+			posts.map((post, index) => {
+				const isFeatured = index === 0;
+				// for some reason <= does not work.
+				// see more https://github.com/withastro/compiler/issues/723
+				const showImage = index == 2 || index < 2;
 
-					<div class="content">
-						<span class="meta">
-							{post.data.date} · {post.data.category}
-						</span>
-
-						<h2>{post.data.title}</h2>
-
-						{post.data.description && (
-							<p>{post.data.description}</p>
+				return (
+					<a
+						class={`card ${isFeatured ? "featured" : ""}`}
+						href={`/${post.slug}/`}
+					>
+						{showImage && (
+							<div class="image-wrapper">
+								<img
+									src={post.data.image || SITE.defaultImage}
+									alt={post.data.title}
+								/>
+							</div>
 						)}
-					</div>
-				</a>
-			))
+
+						<div class="content">
+							<span class="meta">
+								{post.data.date} · {post.data.category}
+							</span>
+
+							<h2>{post.data.title}</h2>
+							<p>{post.data.description}</p>
+						</div>
+					</a>
+				);
+			})
 		}
 	</div>
 </Layout>
 
+<footer>
+	<p>Diagnostics:</p>
+	<small>{"{{.Diagnostics}}"}</small>
+</footer>
 <style>
+	/* Mobile-first grid: 1 column */
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		grid-template-columns: 1fr;
 		gap: 1.5rem;
+		margin-top: 2rem;
 	}
 
 	.card {
-		display: block;
+		display: flex;
+		flex-direction: column;
 		border: 1px solid #eee;
 		border-radius: 10px;
-		overflow: hidden;
+		overflow: hidden; /* Ensures the image doesn't spill over the rounded corners */
 		text-decoration: none;
 		color: inherit;
+		background: #111111;
 		transition:
 			transform 0.15s ease,
 			box-shadow 0.15s ease;
@@ -61,27 +82,72 @@ posts.sort(
 	}
 
 	.card img {
-		width: 100%;
-		/* height: 160px; */
 		object-fit: cover;
 	}
 
 	.content {
-		padding: 1rem;
+		padding: 1.5rem;
+		flex-grow: 1; /* Pushes content to fill remaining space */
+		display: flex;
+		flex-direction: column;
 	}
 
 	.meta {
 		font-size: 0.8rem;
 		color: #666;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 
 	h2 {
-		margin: 0.4rem 0;
-		font-size: 1.1rem;
+		margin: 0.5rem 0;
+		font-size: 1.25rem;
+		line-height: 1.3;
 	}
 
 	p {
-		font-size: 0.9rem;
-		color: #444;
+		font-size: 0.95rem;
+		color: #555;
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	footer {
+		text-align: left;
+		font-size: 0.8em;
+		color: #333333;
+	}
+
+	/* Desktop & Tablet adjustments */
+	@media (min-width: 768px) {
+		/* Max 2 columns */
+		.grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		/* Featured Post (Index 0) */
+		.featured {
+			grid-column: 1 / -1; /* Spans across all columns */
+			flex-direction: row; /* Horizontal layout */
+			padding: 15px;
+		}
+
+		.featured .image-wrapper {
+			width: 50%;
+			flex-shrink: 0;
+		}
+
+		.featured img {
+			/* height: 100%; */
+		}
+
+		.featured .content {
+			justify-content: center; /* Centers the text vertically next to the image */
+			padding: 2.5rem;
+		}
+
+		.featured h2 {
+			font-size: 1.75rem; /* Make the featured title a bit bigger */
+		}
 	}
 </style>
