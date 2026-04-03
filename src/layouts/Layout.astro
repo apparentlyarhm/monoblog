@@ -71,6 +71,12 @@ const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
         font-style: normal;
         font-display: swap;
     }
+
+    @font-face {
+        font-family: "DM Sans";
+        src: url("/fonts/DMSans-VariableFont.ttf") format("truetype");
+        font-weight: 100 800;
+    }
     img {
         max-width: 100%;
         height: auto;
@@ -85,10 +91,14 @@ const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
         --fg: #eeeeee;
         --accent: #00ff00;
 
-        --text-base: 1.125rem;
-        --text-lg: 1.414rem;
-        --text-xl: 1.999rem;
-        --text-2xl: 2.827rem;
+        --text-base: 1.2rem;
+        --text-lg: 1.6rem;
+        --text-xl: 2.1rem;
+        --text-2xl: 3rem;
+
+        /* homepage titles */
+        --hp-h: 2.3rem;
+        --hp-h-m: 2.155rem
     }
 
     html {
@@ -135,6 +145,7 @@ const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
         line-height: 1.2;
         letter-spacing: -0.02em;
         text-align: left;
+        font-family: "DM Sans", sans-serif;
     }
 
     h1 {
