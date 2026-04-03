@@ -10,8 +10,8 @@ posts.sort(
 ---
 
 <Layout title="insert title here">
-	<h1>{SITE.title}</h1>
-	<p>{SITE.description}</p>
+	<h1 id="site-tit">{SITE.title}</h1>
+	<p id="site-des">{SITE.description}</p>
 
 	<div class="grid">
 		{
@@ -40,8 +40,8 @@ posts.sort(
 								{post.data.date} · {post.data.category}
 							</span>
 
-							<h2>{post.data.title}</h2>
-							<p>{post.data.description}</p>
+							<h2 id="hp-ptit">{post.data.title}</h2>
+							<p id="hp-pdes">{post.data.description}</p>
 						</div>
 					</a>
 				);
@@ -56,6 +56,21 @@ posts.sort(
 </footer>
 <style>
 	/* Mobile-first grid: 1 column */
+
+	/* updated fonts for homepage */
+	#site-tit,
+	#site-des,
+	#hp-ptit,
+	#hp-pdes {
+		font-family: "DM Sans", sans-serif;
+	}
+
+	#site-tit,
+	#hp-ptit {
+		font-size: var(--hp-h);
+		font-weight: 700;
+	}
+
 	.grid {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -123,6 +138,12 @@ posts.sort(
 		/* Max 2 columns */
 		.grid {
 			grid-template-columns: repeat(2, 1fr);
+		}
+
+		#site-tit,
+		#hp-ptit {
+			font-size: var(--hp-h-m);
+			font-weight: 600;
 		}
 
 		/* Featured Post (Index 0) */
