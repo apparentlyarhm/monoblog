@@ -1,5 +1,6 @@
 ---
 import { getSEOMetadata } from "../utils/seo";
+import "katex/dist/katex.min.css";
 
 const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
     Astro.props,
@@ -98,7 +99,7 @@ const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
 
         /* homepage titles */
         --hp-h: 2.3rem;
-        --hp-h-m: 2.155rem
+        --hp-h-m: 2.155rem;
     }
 
     html {
@@ -123,8 +124,39 @@ const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
         margin-left: auto;
         margin-right: auto;
         line-height: 1.7;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .katex {
+        font-size: 1.4em;
     }
 
+    /* display equations */
+    .katex-display {
+        border-radius: 12px;
+
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+
+        margin: 2rem 0;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .katex-html {
+        background: #0d111737;
+        border: 1px solid #30363d;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    /* slightly larger display math */
+    .katex-display > .katex {
+        font-size: 1.3em;
+    }
     blockquote {
         border: 1px solid #0c4494;
         border-left: 7px solid #0c71ff;
@@ -133,7 +165,7 @@ const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
         margin-top: 5px;
         margin-bottom: 5px;
         color: #ff79c6 !important;
-        border-radius: 12px
+        border-radius: 12px;
     }
 
     h1,
@@ -276,6 +308,9 @@ const { finalTitle, finalDesc, finalImage, canonicalURL } = getSEOMetadata(
             /* Tighten vertical rhythm (scrolling is expensive on mobile) */
             margin-top: 2.5rem;
             margin-bottom: 0.5rem;
+        }
+        .katex {
+            font-size: 0.8em;
         }
 
         pre {
