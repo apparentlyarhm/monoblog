@@ -26,7 +26,7 @@ COPY server ./server
 
 RUN go mod download
 
-RUN go build -o server main.go
+RUN go build -o blog main.go
 
 # since we did ember.FS in the go code, the binary has the static files embedded
 
@@ -35,8 +35,8 @@ FROM alpine:latest
 WORKDIR /root/
 
 # only the binary is needed
-COPY --from=be /app/server .
+COPY --from=be /app/blog .
 
 EXPOSE 8080
 
-CMD ["./server"]
+CMD ["./blog"]
