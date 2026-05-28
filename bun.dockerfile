@@ -22,6 +22,7 @@ WORKDIR /app
 
 COPY --from=fe /app/dist ./dist
 COPY go.mod go.sum main.go ./
+COPY server ./server
 
 RUN go mod download
 
